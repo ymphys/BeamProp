@@ -1,0 +1,103 @@
+\contentsline {chapter}{\numberline {1}Introduction}{8}{}%
+\contentsline {chapter}{\numberline {2}Some preliminary definitions and concepts}{10}{}%
+\contentsline {chapter}{\numberline {3}Particle beam propagation in vacuum or a negligible medium}{15}{}%
+\contentsline {section}{\numberline {3.1}Neutral beam in vacuum : ballistic propagation}{15}{}%
+\contentsline {section}{\numberline {3.2}Charged beam in vacuum : space-charge-driven expansion}{17}{}%
+\contentsline {section}{\numberline {3.3}Injection of a charged beam into vacuum : limiting current}{20}{}%
+\contentsline {section}{\numberline {3.4}Inductive head erosion}{22}{}%
+\contentsline {section}{\numberline {3.5}Injection into outer-space : spacecraft charging}{25}{}%
+\contentsline {chapter}{\numberline {4}Particle beam propagation in a gas or plasma}{27}{}%
+\contentsline {section}{\numberline {4.1}Beam charge and current neutralization}{27}{}%
+\contentsline {section}{\numberline {4.2}Charged beam in a plasma : the Bennett pinch}{33}{}%
+\contentsline {section}{\numberline {4.3}Effect of internal forces : cohesion and coupling}{41}{}%
+\contentsline {section}{\numberline {4.4}Effect of external forces : Earth's magnetic field}{46}{}%
+\contentsline {subsection}{\numberline {4.4.1}Effect on charge and current neutralization}{48}{}%
+\contentsline {subsection}{\numberline {4.4.2}Effect on beam trajectory}{49}{}%
+\contentsline {subsection}{\numberline {4.4.3}Effect on beam head}{51}{}%
+\contentsline {subsection}{\numberline {4.4.4}Summary}{54}{}%
+\contentsline {section}{\numberline {4.5}Charged beam in a dense gas or plasma : Nordsieck equation}{57}{}%
+\contentsline {section}{\numberline {4.6}Particle beam in a gas or plasma : emittance-driven expansion}{64}{}%
+\contentsline {section}{\numberline {4.7}Deflection and guiding by conductors and channels}{66}{}%
+\contentsline {subsection}{\numberline {4.7.1}Deflection and guiding by conductors}{67}{}%
+\contentsline {subsection}{\numberline {4.7.2}Magnetic tracking in discharge plasma channels}{70}{}%
+\contentsline {subsection}{\numberline {4.7.3}Electrostatic tracking in ion-focusing channels}{71}{}%
+\contentsline {subsection}{\numberline {4.7.4}Electrostatic channel-tracking in full-density air}{75}{}%
+\contentsline {subsection}{\numberline {4.7.5}Magnetic channel-tracking in full-density air}{76}{}%
+\contentsline {chapter}{\numberline {5}Injection of a high-power beam into the atmosphere}{78}{}%
+\contentsline {section}{\numberline {5.1}Plasma generation by a particle beam}{78}{}%
+\contentsline {subsection}{\numberline {5.1.1}Maxwell's equations and beam coordinate system}{80}{}%
+\contentsline {subsection}{\numberline {5.1.2}Circuit equation}{82}{}%
+\contentsline {subsection}{\numberline {5.1.3}Conductivity equation}{85}{}%
+\contentsline {subsection}{\numberline {5.1.4}Current enhancement}{87}{}%
+\contentsline {subsection}{\numberline {5.1.5}Summary}{88}{}%
+\contentsline {section}{\numberline {5.2}Charge neutralization : limitations due to atmospheric density}{89}{}%
+\contentsline {section}{\numberline {5.3}Conductivity generation and critical beam current}{94}{}%
+\contentsline {section}{\numberline {5.4}Ohmic losses and return-current heating}{97}{}%
+\contentsline {section}{\numberline {5.5}Beam head erosion}{100}{}%
+\contentsline {section}{\numberline {5.6}Beam conditioning}{104}{}%
+\contentsline {section}{\numberline {5.7}Propagation of a train of pulses}{107}{}%
+\contentsline {chapter}{\numberline {6}Stability of propagating high-power beams}{108}{}%
+\contentsline {section}{\numberline {6.1}General considerations on beam stability}{108}{}%
+\contentsline {section}{\numberline {6.2}Microinstabilities}{113}{}%
+\contentsline {subsection}{\numberline {6.2.1}Two-stream instability}{114}{}%
+\contentsline {subsection}{\numberline {6.2.2}Weibel (or micro-filamentation) instability}{116}{}%
+\contentsline {subsection}{\numberline {6.2.3}Beam-plasma heating by microinstabilities}{120}{}%
+\contentsline {subsection}{\numberline {6.2.4}Discussion of microinstabilities}{120}{}%
+\contentsline {section}{\numberline {6.3}Macroinstabilities}{121}{}%
+\contentsline {subsection}{\numberline {6.3.1}Macro-filamentation}{122}{}%
+\contentsline {subsection}{\numberline {6.3.2}Electrostatic kink (or `ion hose') instability}{124}{}%
+\contentsline {subsection}{\numberline {6.3.3}Electromagnetic kink (or `resistive hose') instability}{126}{}%
+\contentsline {subsection}{\numberline {6.3.4}Macrostability of a beam penetrating a neutral gas}{128}{}%
+\contentsline {subsection}{\numberline {6.3.5}Macrostability of beams with rounded radial profiles}{130}{}%
+\contentsline {subsection}{\numberline {6.3.6}Discussion of macroinstabilities}{133}{}%
+\contentsline {section}{\numberline {6.4}Mastering and damping instabilities}{133}{}%
+\contentsline {chapter}{\numberline {7}Plasmoid beam propagation}{135}{}%
+\contentsline {section}{\numberline {7.1}Plasmoids in fundamental and applied sciences}{135}{}%
+\contentsline {subsection}{\numberline {7.1.1}Compact plasmoids}{138}{}%
+\contentsline {subsection}{\numberline {7.1.2}Beam plasmoids}{141}{}%
+\contentsline {subsection}{\numberline {7.1.3}Time-scales for beam plasmoid propagation}{143}{}%
+\contentsline {section}{\numberline {7.2}Propagation across a magnetized vacuum}{144}{}%
+\contentsline {section}{\numberline {7.3}Propagation across a magnetized plasma}{150}{}%
+\contentsline {section}{\numberline {7.4}Gaussian-profile beam plasmoid model}{154}{}%
+\contentsline {section}{\numberline {7.5}Feasibility of matter-antimatter beam plasmoids}{161}{}%
+\contentsline {chapter}{\numberline {8}Scientific and technical prospect}{166}{}%
+\contentsline {section}{\numberline {8.1}Discussion of theoretical prospect}{166}{}%
+\contentsline {section}{\numberline {8.2}Discussion of beam propagation experiments}{169}{}%
+\contentsline {chapter}{\numberline {9}Neutral particle beams propagation experiments}{172}{}%
+\contentsline {section}{\numberline {9.1}Neutral hydrogen beam technology development}{172}{}%
+\contentsline {subsection}{\numberline {9.1.1}The ion source}{173}{}%
+\contentsline {subsection}{\numberline {9.1.2}The injector}{173}{}%
+\contentsline {subsection}{\numberline {9.1.3}The accelerator}{174}{}%
+\contentsline {subsection}{\numberline {9.1.4}The beam focusing and steering optics}{175}{}%
+\contentsline {subsection}{\numberline {9.1.5}The neutralizing cell}{175}{}%
+\contentsline {subsection}{\numberline {9.1.6}Summary}{176}{}%
+\contentsline {section}{\numberline {9.2}BEAR and GTA at Los Alamos National Laboratory}{176}{}%
+\contentsline {section}{\numberline {9.3}Emerging neutral beam technologies}{179}{}%
+\contentsline {subsection}{\numberline {9.3.1}Antihydrogen beams}{180}{}%
+\contentsline {subsection}{\numberline {9.3.2}Positronium beams}{181}{}%
+\contentsline {subsection}{\numberline {9.3.3}Ultra-high-energy laser beams}{181}{}%
+\contentsline {subsection}{\numberline {9.3.4}Summary}{181}{}%
+\contentsline {chapter}{\numberline {10}Charged particle beams propagation experiments}{183}{}%
+\contentsline {section}{\numberline {10.1}ATA at Lawrence Livermore National Laboratory}{183}{}%
+\contentsline {section}{\numberline {10.2}RADLAC at Sandia National Laboratory}{189}{}%
+\contentsline {section}{\numberline {10.3}LIA-10 and LIA-30 at Arzamas-16}{193}{}%
+\contentsline {section}{\numberline {10.4}PHERMEX at Los Alamos National Laboratory}{194}{}%
+\contentsline {section}{\numberline {10.5}Other electron-beam propagation experiments in the USA}{195}{}%
+\contentsline {subsection}{\numberline {10.5.1}DARHT --- 2 kA, 3.5 MV, 2 $\mu $s}{195}{}%
+\contentsline {subsection}{\numberline {10.5.2}Hermes III --- 19 MeV, 700 kA, 25 ns}{196}{}%
+\contentsline {subsection}{\numberline {10.5.3}IBEX --- 70 kA, 4 Mev, 20 ns}{196}{}%
+\contentsline {subsection}{\numberline {10.5.4}MEDEA II --- 13 kA, 1.2 MV, 2 $\times $ 10 ns}{197}{}%
+\contentsline {subsection}{\numberline {10.5.5}Pulserad 310 --- 5--10 kA, 1 MeV, 35 ns}{198}{}%
+\contentsline {subsection}{\numberline {10.5.6}Febetron 706 --- 5 kA, 0.4 MeV, 3 ns}{198}{}%
+\contentsline {subsection}{\numberline {10.5.7}Stanford Mark III --- 10 A, 42 MeV, 4 ps}{199}{}%
+\contentsline {section}{\numberline {10.6}Propagation experiments in other countries}{200}{}%
+\contentsline {section}{\numberline {10.7}High-intensity proton and ion beams}{201}{}%
+\contentsline {subsection}{\numberline {10.7.1}Accumulation and pulse compression}{202}{}%
+\contentsline {subsection}{\numberline {10.7.2}Collective acceleration}{203}{}%
+\contentsline {subsection}{\numberline {10.7.3}Diode-like sources}{203}{}%
+\contentsline {subsection}{\numberline {10.7.4}High-intensity proton beam propagation experiments}{205}{}%
+\contentsline {section}{\numberline {10.8}High-intensity muon beams}{206}{}%
+\contentsline {section}{\numberline {10.9}Ultra-high-energy particle beams}{208}{}%
+\contentsline {chapter}{\numberline {11}Conclusion}{210}{}%
+\contentsline {chapter}{\numberline {12}About this report}{211}{}%
+\contentsline {chapter}{\numberline {13}References}{221}{}%
