@@ -7,7 +7,7 @@ qe = 1.609e-19  # 元电荷 [C]
 me = 9.11e-31  # 电子质量 [kg]
 mp = 938/0.511*me
 # 变量输入
-gamma = 70 # 洛伦兹因子，无量纲
+gamma = 1.5 # 洛伦兹因子，无量纲
 beta = np.sqrt(1 - 1/gamma**2) # 相对论速度，无量纲
 B = 1.0e-7 # 磁场横向分量 [T]
 
@@ -17,7 +17,15 @@ wB = qe * B / (gamma * me)  # 回旋频率
 # Rc = 1.7e-3*beta*gamma/B # 垂直情况下回旋半径 [m]
 a0_max = v0 / wB  # 最大回转半径 [m]
 
-print(2*a0_max)
+eps_n = 1e-6 # 归一化发射度 [m·rad]
+beta_func = 10.0 # beta函数 [m]
+
+r_0 = np.sqrt(eps_n*beta_func/gamma/beta) # 光束半径 [m]
+r_0_p = np.sqrt(eps_n/beta_func/gamma/beta) # 光束发散角 [rad]
+
+# print(f"gamma={gamma},beta_f={beta_func}m,r_0={r_0*1e3:.3f}mm,r_0'={r_0_p*1e3:.3f}mrad")
+
+# print(2*a0_max)
 
 # def calc_v(m,Ek):
 #     """
