@@ -9,7 +9,12 @@ Q_E = 1.602176634e-19        # Elementary charge (C)
 C = 299792458                # Speed of light (m/s)
 
 # === Inputs (SI Units) ===
-gamma = 70
+gamma = 100
+Ib = 1.8 # current, (A)
+epsilon_n = 1e-6 # normalized emmitance (m-rad) 
+theta0 = 5e-6 # beam initial angle (rad)
+n_i = 1e5 # background ion density (m^-3)
+zmax = 1e5 # total propagation distance (m)
 
 # === Relativistic beta ===
 def beta(gamma: float) -> float:
@@ -36,28 +41,8 @@ def alfven_current(gamma: float) -> float:
     b = beta(gamma)
     return 4 * np.pi * EPSILON_0 * M_E * C ** 3 * b * gamma / Q_E
 
-# === Emittance ===
-def epsilon_rms(Ib: float, gamma: float, em_type: str) -> float:
-    """
-    Calculate RMS emittance (m·rad).
-    Parameters:
-        Ib (float): Beam current (A)
-        gamma (float): Lorentz factor
-        em_type (str): 'Ti', 'C', or 'LP'
-    Returns:
-        float: RMS emittance (m·rad)
-    """
-    if em_type == 'Ti':
-        return 0.01 * 0.9 / gamma
-    elif em_type == 'C':
-        return 0.01 * 0.04 / gamma
-    elif em_type == 'LP':
-        return 0.01 * 0.005 * np.sqrt(Ib) / gamma
-    else:
-        raise ValueError("em_type must be 'Ti', 'C', or 'LP'")
-
 # === Charge Neutralization Factor ===
-def charge_neutralization_factor(gamma: float, R: float, n_i: float, Ib: float) -> float:
+def f_e(gamma: float, R: float, n_i: float, Ib: float) -> float:
     """
     Calculate charge neutralization factor f_e.
     Parameters:
@@ -84,86 +69,59 @@ def x_factor(gamma: float, R: float, n_i: float, Ib: float) -> float:
     Returns:
         float: x factor
     """
-    fe = charge_neutralization_factor(gamma, R, n_i, Ib)
+    fe = f_e(gamma, R, n_i, Ib)
     return (fe * gamma ** 2 - 1) / (gamma ** 2 - 1)
 
-# === Plasma Equilibrium Radius ===
-def plasma_equilibrium_radius(Ib: float, n_i: float, gamma: float, em_type: str) -> float:
+# === initial beam radius ===
+def R_0(epsilon_n: float, theta0: float) -> float:
     """
-    Calculate plasma equilibrium radius (m).
+    calculate initial beam radius for given emmitance and beam initial angle
     Parameters:
-        Ib (float): Beam current (A)
+        epsilon_n (float): normalized emmitance
+        theta0 (float): Beam initial angle (rad)
         n_i (float): Ion density (m^-3)
-        gamma (float): Lorentz factor
-        em_type (str): 'Ti', 'C', or 'LP'
     Returns:
-        float: Equilibrium radius (m)
+        float: R_0
     """
-    b = beta(gamma)
-    I_A = alfven_current(gamma)
-    eps = epsilon_rms(Ib, gamma, em_type)
-    # Avoid division by zero
-    denom = 2 * Q_E * n_i * np.pi * b * C * gamma ** 2
-    if denom == 0:
-        raise ZeroDivisionError("Denominator in plasma_equilibrium_radius is zero.")
-    sqrt_term = np.sqrt(Ib ** 2 + denom * (gamma ** 2 - 1) * I_A * eps**2)
-    return np.sqrt((Ib + sqrt_term) / denom)
+    return epsilon_n/beta(gamma)/gamma/theta0
 
-def envelope_ode_2nd(z, y, params):
+def envelope_ode_1(z, y):
     """
     二阶束流包络微分方程转化为一阶方程组
     y[0]: R(z)
     y[1]: R'(z)
     返回: [R'(z), R''(z)]
     """
-    gamma = params['gamma']
-    n_i = params['n_i']
-    Ib = params['Ib']
-    em_type = params['em_type']
+    # gamma = params['gamma']
+    # n_i = params['n_i']
+    # Ib = params['Ib']
     R = y[0]
     R_prime = y[1]
     I_A = alfven_current(gamma)
     xfac = x_factor(gamma, R, n_i, Ib)
-    eps = epsilon_rms(Ib, gamma, em_type)
-    # 你的二阶方程右侧
+    eps = epsilon_n/beta(gamma)/gamma
     R_2prime = -2 * xfac * Ib / (I_A * R) + eps**2 / R**3
+    # R_2prime = eps**2 / R**3
     return [R_prime, R_2prime]
 
 if __name__ == "__main__":
-    try:
-        gamma = float(input("Enter Lorentz factor gamma (>=1): "))
-        if gamma < 1:
-            raise ValueError("gamma must be >= 1")
-        n_i_cm3 = float(input("Enter ion density n_i (cm^-3): "))
-        n_i = n_i_cm3 * 1e6  # convert to m^-3
-        Ib = float(input("Enter beam current Ib (A): "))
-        em_type = input("Enter emittance type ('Ti', 'C', or 'LP'): ").strip()
-        R_eq = plasma_equilibrium_radius(Ib, n_i, gamma, em_type)
-    except Exception as e:
-        print(f"Error: {e}")
-    params = {
-        'gamma': gamma,
-        'n_i': n_i,
-        'Ib': Ib,
-        'em_type': em_type
-    }
-    # 初始条件
-    R0_cm = float(input("Enter initial envelope radius R0 (cm): "))
-    R0 = R0_cm * 1e-2  # convert to meters
-    R0_prime = float(input("Enter initial envelope slope R0' : "))  # 新增输入
-    y0 = [R0, R0_prime]
-    z_span = (0, float(input("Enter max z (m): ")))
-    z_eval = np.linspace(z_span[0], z_span[1], 200)
+    
+    R0 = R_0(epsilon_n,theta0)
+    y0 = [R0, theta0]
+    z_span = (0, zmax)
+    z_eval = np.linspace(z_span[0], z_span[1], 2000)
 
     # 求解二阶微分方程
-    sol = solve_ivp(lambda z, y: envelope_ode_2nd(z, y, params), z_span, y0, t_eval=z_eval)
+    sol1 = solve_ivp(lambda z, y: envelope_ode_1(z, y), z_span, y0, t_eval=z_eval)
+    Rt1 = sol1.y[0][-1]
 
-    print(f"\nPlasma equilibrium radius R_eq = {R_eq:.6e} m")
+    # print out import variables
+    print(f"R0={R0:2e}, theta0={theta0:2e},Rt1={Rt1:2e}")
 
-    # 结果可视化（将R单位从m转换为cm）
-    plt.plot(sol.t, sol.y[0] * 100)  # m -> cm
+    # 结果可视化
+    plt.plot(sol1.t, sol1.y[0])
     plt.xlabel('z (m)')
-    plt.ylabel('Envelope radius R (cm)')
+    plt.ylabel('Envelope radius R (m)')
     plt.title('Beam Envelope Evolution')
     plt.grid()
     plt.show()
