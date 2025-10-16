@@ -1,127 +1,178 @@
+from dataclasses import dataclass, replace
+from typing import Any, Callable, List, Sequence
+import matplotlib
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy.integrate import solve_ivp
-import matplotlib.pyplot as plt
+
+# 设置中文字体和负号显示（如有需要）
+matplotlib.rcParams['font.sans-serif'] = ['Heiti TC', 'STHeiti', 'SimHei', 'Arial Unicode MS']
+matplotlib.rcParams['axes.unicode_minus'] = False
 
 # === Physical Constants (SI Units) ===
 EPSILON_0 = 8.854187817e-12  # Vacuum permittivity (F/m)
-M_E = 9.10938356e-31         # Electron mass (kg)
-Q_E = 1.602176634e-19        # Elementary charge (C)
-C = 299792458                # Speed of light (m/s)
+M_E = 9.10938356e-31  # Electron mass (kg)
+Q_E = 1.602176634e-19  # Elementary charge (C)
+C = 299792458  # Speed of light (m/s)
 
-# === Inputs (SI Units) ===
-gamma = 100
-Ib = 1.8 # current, (A)
-epsilon_n = 1e-6 # normalized emmitance (m-rad) 
-theta0 = 5e-6 # beam initial angle (rad)
-n_i = 1e5 # background ion density (m^-3)
-zmax = 1e5 # total propagation distance (m)
 
-# === Relativistic beta ===
-def beta(gamma: float) -> float:
-    """
-    Calculate relativistic velocity factor beta = v/c.
-    Parameters:
-        gamma (float): Lorentz factor (must be >= 1)
-    Returns:
-        float: beta
-    """
-    if gamma < 1:
-        raise ValueError("gamma must be >= 1")
-    return np.sqrt(1 - 1 / gamma ** 2)
+@dataclass(frozen=True)
+class BeamParameters:
+    """Container for beam and plasma properties used by the envelope solver."""
 
-# === Alfven current ===
-def alfven_current(gamma: float) -> float:
-    """
-    Calculate Alfven current (A).
-    Parameters:
-        gamma (float): Lorentz factor
-    Returns:
-        float: Alfven current (A)
-    """
-    b = beta(gamma)
-    return 4 * np.pi * EPSILON_0 * M_E * C ** 3 * b * gamma / Q_E
+    gamma: float
+    current: float  # Beam current (A)
+    normalized_emittance: float  # Normalized emittance (m-rad)
+    initial_angle: float  # Initial divergence angle (rad)
+    ion_density: float  # Background ion density (m^-3)
 
-# === Charge Neutralization Factor ===
-def f_e(gamma: float, R: float, n_i: float, Ib: float) -> float:
-    """
-    Calculate charge neutralization factor f_e.
-    Parameters:
-        gamma (float): Lorentz factor
-        R (float): Beam envelope radius (m)
-        n_i (float): Ion density (m^-3)
-        Ib (float): Beam current (A)
-    Returns:
-        float: Charge neutralization factor
-    Note: n_i should be in m^-3 (not cm^-3)
-    """
-    b = beta(gamma)
-    return Q_E * b * C * np.pi * R ** 2 * n_i / Ib
+    def __post_init__(self) -> None:
+        if self.gamma < 1:
+            raise ValueError("gamma must be >= 1")
+        if self.current <= 0:
+            raise ValueError("Beam current must be positive")
+        if self.normalized_emittance <= 0:
+            raise ValueError("Normalized emittance must be positive")
+        if self.initial_angle <= 0:
+            raise ValueError("Initial angle must be positive")
+        if self.ion_density < 0:
+            raise ValueError("Ion density must be non-negative")
 
-# === x factor ===
-def x_factor(gamma: float, R: float, n_i: float, Ib: float) -> float:
-    """
-    Calculate x factor for beam-plasma system.
-    Parameters:
-        gamma (float): Lorentz factor
-        R (float): Beam envelope radius (m)
-        n_i (float): Ion density (m^-3)
-        Ib (float): Beam current (A)
-    Returns:
-        float: x factor
-    """
-    fe = f_e(gamma, R, n_i, Ib)
-    return (fe * gamma ** 2 - 1) / (gamma ** 2 - 1)
+    @property
+    def beta(self) -> float:
+        """Relativistic beta factor (v/c)."""
+        return np.sqrt(1.0 - 1.0 / self.gamma**2)
 
-# === initial beam radius ===
-def R_0(epsilon_n: float, theta0: float) -> float:
-    """
-    calculate initial beam radius for given emmitance and beam initial angle
-    Parameters:
-        epsilon_n (float): normalized emmitance
-        theta0 (float): Beam initial angle (rad)
-        n_i (float): Ion density (m^-3)
-    Returns:
-        float: R_0
-    """
-    return epsilon_n/beta(gamma)/gamma/theta0
+    @property
+    def alfven_current(self) -> float:
+        """Alfven current (A)."""
+        return 4.0 * np.pi * EPSILON_0 * M_E * C**3 * self.beta * self.gamma / Q_E
 
-def envelope_ode_1(z, y):
+    @property
+    def geometric_emittance(self) -> float:
+        """Geometric emittance (m-rad)."""
+        return self.normalized_emittance / (self.beta * self.gamma)
+
+    def neutralization_factor(self, radius: float) -> float:
+        """Charge neutralization factor f_e."""
+        if radius <= 0:
+            raise ValueError("Radius must be positive when computing neutralization factor")
+        return Q_E * self.beta * C * np.pi * radius**2 * self.ion_density / self.current
+
+    def x_factor(self, radius: float) -> float:
+        """Dimensionless x factor for the beam-plasma system."""
+        fe = self.neutralization_factor(radius)
+        return (fe * self.gamma**2 - 1.0) / (self.gamma**2 - 1.0)
+
+    def initial_radius(self) -> float:
+        """Initial beam radius derived from emittance and divergence angle."""
+        return self.geometric_emittance / self.initial_angle
+
+
+def make_envelope_rhs(params: BeamParameters) -> Callable[[float, Sequence[float]], List[float]]:
     """
-    二阶束流包络微分方程转化为一阶方程组
-    y[0]: R(z)
-    y[1]: R'(z)
-    返回: [R'(z), R''(z)]
+    Create the first-order system that represents the beam envelope equation.
+
+    The state vector is [R(z), R'(z)].
     """
-    # gamma = params['gamma']
-    # n_i = params['n_i']
-    # Ib = params['Ib']
-    R = y[0]
-    R_prime = y[1]
-    I_A = alfven_current(gamma)
-    xfac = x_factor(gamma, R, n_i, Ib)
-    eps = epsilon_n/beta(gamma)/gamma
-    R_2prime = -2 * xfac * Ib / (I_A * R) + eps**2 / R**3
-    # R_2prime = eps**2 / R**3
-    return [R_prime, R_2prime]
+    inverse_alfven_current = 1.0 / params.alfven_current
+    geometric_emittance = params.geometric_emittance
+
+    def rhs(_: float, state: Sequence[float]) -> List[float]:
+        radius, slope = state
+        # Avoid numerical issues if the solver probes non-physical radii.
+        radius_for_force = max(float(radius), 1.0e-12)
+        xfac = params.x_factor(radius_for_force)
+        second_derivative = (
+            -2.0 * xfac * params.current * inverse_alfven_current / radius_for_force
+            + (geometric_emittance**2) / radius_for_force**3
+        )
+        return [float(slope), second_derivative]
+
+    return rhs
+
+
+def sweep_final_radius_by_gamma(
+    params: BeamParameters,
+    gamma_values: Sequence[float],
+    z_max: float,
+) -> np.ndarray:
+    """Compute the final beam radius for each gamma value in gamma_values."""
+    final_radii: List[float] = []
+    for gamma_value in gamma_values:
+        gamma_params = replace(params, gamma=float(gamma_value))
+        solution = solve_envelope(gamma_params, z_max)
+        final_radii.append(solution.y[0][-1])
+    return np.asarray(final_radii)
+
+
+def solve_envelope(
+    params: BeamParameters,
+    z_max: float,
+    num_points: int = 2000,
+) -> Any:
+    """Integrate the beam envelope equation over z in [0, z_max]."""
+    if z_max <= 0:
+        raise ValueError("z_max must be positive")
+    if num_points < 2:
+        raise ValueError("num_points must be at least 2")
+
+    initial_conditions = [params.initial_radius(), params.initial_angle]
+    z_span = (0.0, float(z_max))
+    z_eval = np.linspace(z_span[0], z_span[1], num_points)
+
+    solution = solve_ivp(
+        fun=make_envelope_rhs(params),
+        t_span=z_span,
+        y0=initial_conditions,
+        t_eval=z_eval,
+    )
+
+    if not solution.success:
+        raise RuntimeError(f"Envelope integration failed: {solution.message}")
+
+    return solution
+
+
+def main() -> None:
+    """Solve and plot the beam envelope evolution for a sample parameter set."""
+    params = BeamParameters(
+        gamma=100.0,
+        current=1.8,
+        normalized_emittance=1e-6,
+        initial_angle=5e-6,
+        ion_density=1e5,
+    )
+    z_max = 1e5
+
+    solution = solve_envelope(params, z_max)
+    final_radius = solution.y[0][-1]
+
+    print(
+        f"R0={params.initial_radius():.2e}, "
+        f"theta0={params.initial_angle:.2e}, "
+        f"R(z_max)={final_radius:.2e}"
+    )
+
+    plt.figure("电子束包络半径随传播距离变化")
+    plt.plot(solution.t, solution.y[0])
+    plt.xlabel("z (m)")
+    plt.ylabel("包络半径(m)")
+    plt.title("电子束包络半径随传播距离变化")
+    plt.grid(True)
+
+    E_values = np.linspace(10.0, 100.0, 100)
+    gamma_values = np.linspace(20.0, 200.0, 100)
+    final_radii = sweep_final_radius_by_gamma(params, gamma_values, z_max)
+
+    plt.figure("到靶半径与能量关系")
+    plt.plot(E_values, final_radii)
+    plt.xlabel("能量 (MeV)")
+    plt.ylabel("到靶半径(m)")
+    plt.title("到靶半径与能量关系")
+    plt.grid(True)
+    plt.show()
+
 
 if __name__ == "__main__":
-    
-    R0 = R_0(epsilon_n,theta0)
-    y0 = [R0, theta0]
-    z_span = (0, zmax)
-    z_eval = np.linspace(z_span[0], z_span[1], 2000)
-
-    # 求解二阶微分方程
-    sol1 = solve_ivp(lambda z, y: envelope_ode_1(z, y), z_span, y0, t_eval=z_eval)
-    Rt1 = sol1.y[0][-1]
-
-    # print out import variables
-    print(f"R0={R0:2e}, theta0={theta0:2e},Rt1={Rt1:2e}")
-
-    # 结果可视化
-    plt.plot(sol1.t, sol1.y[0])
-    plt.xlabel('z (m)')
-    plt.ylabel('Envelope radius R (m)')
-    plt.title('Beam Envelope Evolution')
-    plt.grid()
-    plt.show()
+    main()
