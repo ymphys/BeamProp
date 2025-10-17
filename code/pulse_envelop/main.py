@@ -137,10 +137,22 @@ def solve_envelope(
 def main() -> None:
     """Solve and plot the beam envelope evolution for a sample parameter set."""
     params = BeamParameters(
-        gamma=70.0,
+        # 504
+        # gamma=40.0,
+        # current=50e-6,
+        # normalized_emittance=1e-6,
+        # initial_angle=5e-6,
+        # ion_density=1e5,
+        # QY
+        # gamma=70.0,
+        # current=1.8,
+        # normalized_emittance=3e-5,
+        # initial_angle=2e-4,
+        # ion_density=1e5,
+        gamma=200.0,
         current=1.8,
-        normalized_emittance=1e-6,
-        initial_angle=1e-3,
+        normalized_emittance=3e-6,
+        initial_angle=2e-6,
         ion_density=1e5,
     )
     z_max = 1e5
@@ -148,22 +160,29 @@ def main() -> None:
     solution = solve_envelope(params, z_max)
     final_radius = solution.y[0][-1]
 
-    para_res_str = f"能量={params.gamma/2:.2f}MeV \
-                \n流强={params.current:.2f}A \
-                \n归一化发射度={params.normalized_emittance*1e6:.2f}mm-mrad \
-                \n初始发散角={params.initial_angle*1e3:.2f}mrad \
-                \n背景离子密度={params.ion_density*1e-6:.2e}cm-3"
+    para_res_str = "\n".join([
+    fr"能量={params.gamma/2:.1f} $\mathrm{{MeV}}$",
+    # fr"流强={params.current*1e6:.1f} $\mathrm{{\mu A}}$",
+    fr"流强={params.current:.1f} $\mathrm{{A}}$",
+    fr"归一化发射度={params.normalized_emittance*1e6:.1f} $\mathrm{{mm-mrad}}$",
+    fr"初始发散角={params.initial_angle*1e6:.1f} $\mathrm{{\mu rad}}$",
+    # fr"初始发散角={params.initial_angle*1e3:.1f} $\mathrm{{mrad}}$",
+    fr"初始半径={params.initial_radius()*1e2:.2f} $\mathrm{{cm}}$",
+    fr"背景离子密度={params.ion_density*1e-6:.1f} $\mathrm{{cm}}^{{-3}}$",
+    fr"到靶半径={final_radius:.2f} $\mathrm{{m}}$",
+])
+
 
 
     plt.figure("电子束包络半径随传播距离变化")
-    plt.plot(solution.t, solution.y[0])
+    plt.plot(solution.t*1e-3, solution.y[0])
     # plt.xticks(np.arange(0,z_max,10), np.linspace(0,int(z_max/1000),10))
     plt.xlabel("传输距离(km)")
     plt.ylabel("包络半径(m)")
     plt.title("电子束包络半径随传输距离变化")
-    plt.text(x=0.5,y=0.8*final_radius,
+    plt.text(x=0.5,y=0.60*final_radius,
              s=para_res_str)
-    plt.grid(True)
+    plt.grid(False)
 
     # E_values = np.linspace(10.0, 100.0, 100)
     # # gamma_values = np.linspace(20.0, 200.0, 100)
