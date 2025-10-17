@@ -18,8 +18,8 @@ gamma0 = 1.0 + KE_MeV/0.511   # relativistic factor
 beta0 = np.sqrt(1.0 - 1.0/gamma0**2)
 
 # Geometry / initial beam sizes
-a0 = 1.0e-2         # initial transverse semi-axis (m)
-zm0 = 5.0e-2        # initial half-length (m)
+a0 = 1.0e-3         # initial transverse semi-axis (m)
+zm0 = 9.0e-3        # initial half-length (m)
 Ib= 3/4 * N * qe * beta0 * c / zm0   # beam current in Amperes
 # print(f"IB ={Ib:.2f}")
 # Normalized emittances (same as before)
@@ -67,7 +67,7 @@ plt.ylabel("Transverse semi-axis a(s) (m)")
 plt.title(f"Transverse expansion a(s) — KE = {KE_MeV} MeV, s up to {s_max} m")
 plt.grid(True)
 plt.tight_layout()
-plt.savefig(f"vacuum-diffusion/transverse_expansion_{KE_MeV}MeV_{s_max}m.png")
+# plt.savefig(f"vacuum-prop/transverse_expansion_{KE_MeV}MeV_{s_max}m.png")
 plt.close()
 plt.figure(figsize=(8,4))
 plt.plot(sol.t, zm_sol)
@@ -79,7 +79,8 @@ plt.ylabel("Longitudinal half-length z_m(s) (m)")
 plt.title(f"Longitudinal expansion z_m(s) — KE = {KE_MeV} MeV, s up to {s_max} m")
 plt.grid(True)
 plt.tight_layout()
-plt.savefig(f"vacuum-diffusion/longitudinal_expansion_{KE_MeV}MeV_{s_max}m.png")
+# plt.savefig(f"vacuum-prop/longitudinal_expansion_{KE_MeV}MeV_{s_max}m.png")
+plt.show()
 plt.close()
 
 final_a = a_sol[-1]

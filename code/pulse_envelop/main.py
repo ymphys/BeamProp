@@ -172,8 +172,6 @@ def main() -> None:
     fr"到靶半径={final_radius:.2f} $\mathrm{{m}}$",
 ])
 
-
-
     plt.figure("电子束包络半径随传播距离变化")
     plt.plot(solution.t*1e-3, solution.y[0])
     # plt.xticks(np.arange(0,z_max,10), np.linspace(0,int(z_max/1000),10))
